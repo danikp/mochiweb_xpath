@@ -2,6 +2,9 @@
 [mochiweb's html tree](https://github.com/mochi/mochiweb/blob/master/src/mochiweb_html.erl)
 See src/test.erl for examples
 
+[![Build Status](https://travis-ci.org/danikp/mochiweb_xpath.svg?branch=master)](https://travis-ci.org/danikp/mochiweb_xpath)
+
+
 Build
 -----
 
