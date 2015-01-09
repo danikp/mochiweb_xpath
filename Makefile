@@ -1,4 +1,4 @@
-REBAR=rebar
+REBAR=./rebar
 DIALYZER=dialyzer
 
 all:  deps compile

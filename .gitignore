@@ -4,3 +4,5 @@ deps/
 ebin/*app
 .dialyzer_plt
 /ebin/
+/.project
+/.settings/
