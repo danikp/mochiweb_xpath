@@ -32,8 +32,6 @@ lookup_function('name') ->
     {'name',fun 'name'/2,[node_set]};
 lookup_function('starts-with') ->
     {'starts-with', fun 'starts-with'/2,[string,string]};
-lookup_function('ends-with') ->
-    {'ends-with', fun 'ends-with'/2,[string,string]};
 lookup_function('contains') ->
     {'contains', fun 'contains'/2,[string,string]};
 lookup_function('substring') ->
@@ -49,10 +47,10 @@ lookup_function('string') ->
 lookup_function(_) ->
     false.
 
-%% @doc Function: int last() 
-%%      The last function returns the context size of the current node
-last({ctx, _, _, _, _, Size} = _Ctx, []) ->
-    Size.
+%% @doc Function: boolean last() 
+%%      The position function returns the position of the current node
+last({ctx, _, _, _, Position, Size} = _Ctx, []) ->
+    Position =:= Size.
 
 %% @doc Function: number position() 
 %%      The position function returns the position of the current node
@@ -82,17 +80,6 @@ concat(_Ctx, BinariesList) ->
     Size = size(Right),
     case Left of
         <<Right:Size/binary,_/binary>> -> true;
-        _ -> false
-    end.
-
-%% @doc Function: boolean ends-with(string, string) 
-%%      The ends-with function returns true if the first argument string
-%%      ends with the second argument string, and otherwise returns false.
-'ends-with'(_Ctx,[Left,Right]) ->
-    Size = size(Right),
-    Dsize = size(Left) - Size,
-    case Left of
-        <<_:Dsize/binary,Right:Size/binary>> -> true;
         _ -> false
     end.
 
