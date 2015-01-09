@@ -52,6 +52,7 @@ Xpath coverage
 * position
 * count
 * concat
+* ends-with
 * name
 * starts-with
 * contains
@@ -59,6 +60,12 @@ Xpath coverage
 * sum
 * string-length
 * not
+ 
+
+### Implemented abbreviated syntax
+
+* indexed access (e.g. `div[last() - 1]`)
+
 
 ### TODO axes
 

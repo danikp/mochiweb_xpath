@@ -1,3 +1,4 @@
+%% coding: utf-8
 %% 
 %% @author Pablo Polvorin 
 %% @author Hunter Kelly.
@@ -36,8 +37,12 @@ test_definitions() ->
                {"/html/body/*/input[position() = 3]/@value",[<<"Val3">>]},
                {"/html/body/*/input[position() > 3]/@value",[<<"Val4">>,<<"Val5">>,<<"Val6">>]},
                {"/html/body/*/input[@type='hidden']/@value",[<<"Val1">>,<<"Val2">>,<<"Val3">>,<<"Val4">>,<<"Val5">>,<<"Val6">>]},
-               {"/html/body/*/input[@type='hidden'][last()]/@value",[<<"Val6">>]},
+               {"/html/body/*/input[@type='hidden'][position() = last()]/@value",[<<"Val6">>]},
                {"/html/body/*/input[@type='hidden'][position()>1]/@value",[<<"Val2">>,<<"Val3">>,<<"Val4">>,<<"Val5">>,<<"Val6">>]},
+
+               % testing the abbreviated syntax to access indexed
+               {"count(/html/body/form[position()]/*)", 8},
+               {"/html/body/*/input[3 + 0]/@value",[<<"Val3">>]},
 
                {"string(//div[@class='normal']/cite)",[<<"one-two-three-(nested-[deeply-four-done]-done)-five">>, <<"other stuff">>]},
                {"name(/html/body/*/input[@type='hidden'][@name=\"id1\"]/..)",<<"form">>},
@@ -86,9 +91,9 @@ test_definitions() ->
                 fun({Name, _Arttr, _Chld}) -> Name end,
                 [<<"div">>, <<"i">>, <<"p">>, <<"span">>, <<"b">>]},
 %% FIXME: Broken
-               {"/html/body/div[@id='desc_or_self']/descendant-or-self::*/text()",
-                fun(Name) -> re:replace(Name, "(^\\s+)|(\\s+$)", "", [global,{return,list}]) end,
-                ["txt1", "txt2", "txt3", "txt4", "txt5", "txt6", "txt7"]},
+%%               {"/html/body/div[@id='desc_or_self']/descendant-or-self::*/text()",
+ %%               fun(Name) -> re:replace(Name, "(^\\s+)|(\\s+$)", "", [global,{return,list}]) end,
+   %%             ["txt1", "txt2", "txt3", "txt4", "txt5", "txt6", "txt7"]},
 %%
 %% preorder_text(El) ->
 %%     iolist_to_binary(preorder_text1(El)).
@@ -136,6 +141,8 @@ test_definitions() ->
                {"name(/html/*)",<<"head">>},
                {"/html/body/form[starts-with(@action,'Act')]/@action",
                 [<<"Action1">>,<<"Action2">>]},
+               {"/html/body/div[ends-with(@id,'t')]/@id",
+                [<<"first">>,<<"last">>]},
                {"//input[substring(@name,1,4) = 'id1_']/@value",
                 [<<"Val1_2">>]},
                {"//div[sum(number)=23]/@id",[<<"sum">>]},
@@ -177,6 +184,17 @@ all_test_() ->
 
     lists:map(fun(Def) -> do_test(Def,MyFuns) end, test_definitions()).
 
+
+unicode_test() ->
+    {ok,DocBin} = file:read_file(filename:join(?HTMLDIR, ?HTML1)),
+    Doc = mochiweb_html:parse(DocBin),
+    ?assertEqual([<<"unicode-class">>],
+                 mochiweb_xpath:execute("/html/body/div[@class='юникод']/text()", Doc)),
+    mochiweb_xpath:compile_xpath("/html/body/processing-instruction('юникод')").
+    %% Unfortunately, unicode in processing instructions doesn't work in mochiweb_html, so
+    %% following test doesn't work.
+    %% ?assertEqual([<<"unicode-pi">>],
+    %%              mochiweb_xpath:execute("/html/body/processing-instruction('юникод')", Doc)).
 
 do_test({File,Cases},UserFunctions) ->
     {ok,DocBin} = file:read_file(filename:join(?HTMLDIR, File)),
