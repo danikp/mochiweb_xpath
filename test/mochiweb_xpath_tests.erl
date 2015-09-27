@@ -64,6 +64,15 @@ test_definitions() ->
                %% test negative
                {"-1", [-1]},
                {"-count(/html/*)", [-2]},
+               %% test translate
+               {"/html/body//text()[contains(translate(., 'TO', 'to'), 'other text')]", [<<"Some Other Text">>]},
+               %% Translate edge cases:
+               %% - Delete if no corresponding translation
+               {"/html/body//text()[contains(translate(., 'TOe', 'to'), 'othr txt')]", [<<"Some Other Text">>]},
+               %% - translate all occurences
+               {"/html/body//text()[contains(translate(., 'e', 'E'), 'OthEr TExt')]", [<<"Some Other Text">>]},
+               %% - First char occurence determines the translation
+               {"/html/body//text()[contains(translate(., 'TT', 'wy'), 'Other wext')]", [<<"Some Other Text">>]},
                %% == node tests ==
                %% wildcard
                {"count(/html/body/form/*)", 8},
