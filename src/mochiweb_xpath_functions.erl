@@ -46,6 +46,8 @@ lookup_function('not') ->
     {'not', fun x_not/2, [boolean]};
 lookup_function('string') ->
     {'string', fun 'string'/2, [node_set]};
+lookup_function('translate') ->
+    {'translate', fun 'translate'/2, [string,string,string]};
 lookup_function(_) ->
     false.
 
@@ -104,6 +106,24 @@ contains(_Ctx,[Where, What]) ->
         {_, _} ->
             true
     end.
+
+%% @doc Function: string translate(string, string, string)
+%%      The translate function returns the first argument string with
+%%      occurrences of characters in the second argument string replaced by the
+%%      character at the corresponding position in the third argument string.
+translate(_Ctx, [Original, From, To]) ->
+    translate(Original, binary:bin_to_list(From), binary:bin_to_list(To)).
+
+translate(Original, [HFrom|TFrom], [HTo|TTo]) ->
+    PartialTrans = binary:replace(Original, binary:list_to_bin([HFrom]), binary:list_to_bin([HTo]), [global]),
+    translate(PartialTrans, TFrom, TTo);
+
+translate(Original, [HFrom|TFrom], To=[]) ->
+    PartialTrans = binary:replace(Original, binary:list_to_bin([HFrom]), <<"">>, [global]),
+    translate(PartialTrans, TFrom, To);
+
+translate(FinalTrans, _From=[], _To) ->
+    FinalTrans.
 
 %% @doc Function: string substring(string, number, number?) 
 %%      The substring function returns the substring of the first argument 
